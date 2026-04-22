@@ -71,7 +71,7 @@
     }
     .hdr-count-lbl { font-size: 10px; color: var(--muted); text-align: right; margin-top: 2px; }
 
-    /* ── STATUS BAR ── */
+    /* ── STATUS ── */
     .status {
       display: flex; align-items: center; gap: 8px;
       padding: 8px 18px;
@@ -94,85 +94,52 @@
     }
     @keyframes dotPulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-    /* ── CAMERA ── */
+    /* ── CÂMERA — idêntico ao original que funcionava ── */
     .cam {
       position: relative; width: 100%;
-      height: 260px;
-      background: #000; overflow: hidden; flex-shrink: 0;
+      aspect-ratio: 1; background: #111;
+      overflow: hidden; max-height: 280px; flex-shrink: 0;
     }
-    /* O html5-qrcode injeta divs e vídeo com estilos inline — sobrescrevemos tudo */
-    #reader { width: 100% !important; height: 100% !important; }
-    #reader > div { border: none !important; box-shadow: none !important; }
-    #reader video {
-      position: absolute !important;
-      top: 50% !important; left: 50% !important;
-      transform: translate(-50%, -50%) !important;
-      width: 100% !important; height: 100% !important;
-      object-fit: cover !important;
-      min-width: 100% !important; min-height: 100% !important;
-    }
-    #reader img   { display: none !important; }
-    /* Esconde apenas os elementos VISUAIS injetados pelo html5-qrcode.
-       canvas NÃO pode ser ocultado — é onde a biblioteca processa os frames. */
-    #reader div[style*="border"],
-    #reader div[style*="box-shadow"],
-    #reader svg { display: none !important; }
+    #reader { width: 100%; height: 100%; }
+    #reader video { width: 100% !important; height: 100% !important; object-fit: cover; }
+    #reader img { display: none !important; }
 
-    /* Corner frame */
     .frame {
       position: absolute; inset: 0;
-      pointer-events: none; z-index: 10;
+      pointer-events: none; z-index: 2;
       display: flex; align-items: center; justify-content: center;
     }
-    .box { width: 190px; height: 190px; position: relative; }
+    .box { width: 180px; height: 180px; position: relative; }
     .box::before, .box::after, .box span::before, .box span::after {
       content: ''; position: absolute;
-      width: 24px; height: 24px;
-      border-color: var(--accent);
-      border-style: solid;
+      width: 28px; height: 28px;
+      border-color: var(--accent); border-style: solid;
     }
-    .box::before  { top:0;    left:0;  border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
-    .box::after   { top:0;    right:0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
+    .box::before  { top:0; left:0;  border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
+    .box::after   { top:0; right:0; border-width: 3px 3px 0 0; border-radius: 0 4px 0 0; }
     .box span::before { bottom:0; left:0;  border-width: 0 0 3px 3px; border-radius: 0 0 0 4px; }
     .box span::after  { bottom:0; right:0; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
 
-    /* Scan line */
     .line {
       position: absolute; left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
-      width: 160px; height: 2px;
+      transform: translate(-50%,-50%);
+      width: 148px; height: 2px;
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
       border-radius: 2px;
-      animation: scan 2.4s ease-in-out infinite;
-      z-index: 11;
+      animation: scan 2.2s ease-in-out infinite; z-index: 3;
     }
-    @keyframes scan {
-      0%,100% { margin-top: -74px; opacity: 0.2; }
-      50%      { margin-top:  74px; opacity: 1;   }
-    }
+    @keyframes scan { 0%,100%{margin-top:-68px;opacity:0.3} 50%{margin-top:68px;opacity:1} }
+
     .cam-hint {
-      position: absolute; bottom: 10px; left: 50%;
+      position: absolute; bottom: 8px; left: 50%;
       transform: translateX(-50%);
       font-size: 10px; font-family: 'Space Mono', monospace;
       color: rgba(255,255,255,0.35);
-      white-space: nowrap; z-index: 10;
+      white-space: nowrap; z-index: 2;
       letter-spacing: 0.06em;
     }
 
-    /* Overlay escuro sobre a câmera quando pausado */
-    .cam-overlay {
-      position: absolute; inset: 0; z-index: 12;
-      background: rgba(13,13,13,0.7);
-      display: none; align-items: center; justify-content: center;
-    }
-    .cam-overlay.on { display: flex; }
-    .cam-overlay-txt {
-      font-family: 'Space Mono', monospace;
-      font-size: 11px; color: var(--accent);
-      letter-spacing: 0.1em;
-    }
-
-    /* ── INPUT ZONE ── */
+    /* ── INPUT ── */
     .inp-zone {
       padding: 16px 18px 12px;
       border-top: 1px solid var(--border);
@@ -216,21 +183,19 @@
 
     #btn {
       height: 52px; padding: 0 20px; min-width: 100px;
-      background: var(--accent);
-      color: #fff;
+      background: var(--accent); color: #fff;
       border: none; border-radius: 10px;
       font-size: 14px; font-weight: 700;
       cursor: pointer; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: opacity 0.15s, transform 0.1s, background 0.15s;
+      transition: opacity 0.15s, transform 0.1s;
       -webkit-tap-highlight-color: transparent;
       letter-spacing: 0.04em;
     }
     #btn:active:not(:disabled) { opacity: 0.8; transform: scale(0.97); }
     #btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
     .btn-spinner {
-      width: 16px; height: 16px;
-      border-radius: 50%;
+      width: 16px; height: 16px; border-radius: 50%;
       border: 2px solid rgba(255,255,255,0.3);
       border-top-color: #fff;
       animation: spin 0.7s linear infinite;
@@ -240,39 +205,34 @@
     #btn.loading .btn-txt     { opacity: 0.7; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── COUNTERS ── */
+    /* ── CONTADORES ── */
     .ctrs {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 8px; padding: 12px 18px 18px;
-      background: var(--bg);
     }
     .c {
-      padding: 14px 8px;
-      border-radius: 12px;
+      padding: 14px 8px; border-radius: 12px;
       border: 1px solid var(--border);
-      text-align: center;
-      background: var(--surface);
+      text-align: center; background: var(--surface);
       position: relative; overflow: hidden;
     }
     .c::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0;
-      height: 2px;
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
     }
     .c.gn::before { background: var(--green); }
     .c.am::before { background: var(--amber); }
     .c.rd::before { background: var(--red);   }
-
     .c-n {
       font-family: 'Space Mono', monospace;
       font-size: 26px; font-weight: 700; line-height: 1;
     }
-    .c-l { font-size: 10px; color: var(--muted); margin-top: 5px; letter-spacing: 0.04em; }
+    .c-l { font-size: 10px; color: var(--muted); margin-top: 5px; }
     .gn .c-n { color: var(--green); }
     .am .c-n { color: var(--amber); }
     .rd .c-n { color: var(--red);   }
 
-    /* ── MODAL ── */
+    /* ── MODAL (bottom sheet) ── */
     .modal-wrap {
       display: none;
       position: absolute; inset: 0;
@@ -282,7 +242,6 @@
       backdrop-filter: blur(4px);
     }
     .modal-wrap.on { display: flex; }
-
     .modal-box {
       background: var(--surface);
       border-radius: 24px 24px 0 0;
@@ -297,41 +256,27 @@
       from { transform: translateY(100%); opacity: 0; }
       to   { transform: translateY(0);    opacity: 1; }
     }
-
     .modal-handle {
       width: 36px; height: 4px;
-      background: var(--border);
-      border-radius: 99px;
+      background: var(--border); border-radius: 99px;
       margin-bottom: 4px;
     }
-
     .m-i {
-      width: 72px; height: 72px;
-      border-radius: 50%;
+      width: 72px; height: 72px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-size: 28px; font-weight: 700;
     }
     .mi-v { background: var(--green-bg); color: var(--green); border: 1.5px solid rgba(62,207,110,0.3); }
     .mi-u { background: var(--amber-bg); color: var(--amber); border: 1.5px solid rgba(245,166,35,0.3); }
     .mi-x { background: var(--red-bg);   color: var(--red);   border: 1.5px solid rgba(240,64,64,0.3);  }
-
-    .m-t {
-      font-size: 20px; font-weight: 700;
-      color: var(--text); text-align: center;
-    }
-    .m-d {
-      font-size: 13px; color: var(--muted);
-      text-align: center; line-height: 1.6;
-    }
+    .m-t { font-size: 20px; font-weight: 700; color: var(--text); text-align: center; }
+    .m-d { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.6; }
     .m-c {
       font-family: 'Space Mono', monospace;
       font-size: 11px; padding: 8px 16px;
-      border-radius: 8px;
-      background: var(--surface2);
-      color: var(--muted);
-      border: 1px solid var(--border);
-      word-break: break-all; text-align: center;
-      width: 100%; letter-spacing: 0.06em;
+      border-radius: 8px; background: var(--surface2);
+      color: var(--muted); border: 1px solid var(--border);
+      word-break: break-all; text-align: center; width: 100%;
     }
     .m-b {
       width: 100%; height: 54px; margin-top: 4px;
@@ -350,7 +295,6 @@
 <body>
 <div id="app">
 
-  <!-- HEADER -->
   <div class="hdr">
     <div class="hdr-logo">HAIRNOR</div>
     <div class="hdr-info">
@@ -363,24 +307,19 @@
     </div>
   </div>
 
-  <!-- STATUS -->
   <div class="status">
     <div class="dot" id="sdot"></div>
     <span id="stxt">Iniciando câmera...</span>
   </div>
 
-  <!-- CAMERA -->
+  <!-- CÂMERA — estrutura 100% original, sem alterações -->
   <div class="cam">
     <div id="reader"></div>
     <div class="frame"><div class="box"><span></span></div></div>
     <div class="line"></div>
     <span class="cam-hint">ENQUADRE O QR CODE NO CENTRO</span>
-    <div class="cam-overlay" id="cam-overlay">
-      <span class="cam-overlay-txt">PROCESSANDO...</span>
-    </div>
   </div>
 
-  <!-- INPUT -->
   <div class="inp-zone">
     <div class="inp-lbl">
       Código ou CPF
@@ -397,23 +336,12 @@
     </div>
   </div>
 
-  <!-- COUNTERS -->
   <div class="ctrs">
-    <div class="c gn">
-      <div class="c-n" id="cn-v">0</div>
-      <div class="c-l">Liberados</div>
-    </div>
-    <div class="c am">
-      <div class="c-n" id="cn-u">0</div>
-      <div class="c-l">Já usados</div>
-    </div>
-    <div class="c rd">
-      <div class="c-n" id="cn-x">0</div>
-      <div class="c-l">Inválidos</div>
-    </div>
+    <div class="c gn"><div class="c-n" id="cn-v">0</div><div class="c-l">Liberados</div></div>
+    <div class="c am"><div class="c-n" id="cn-u">0</div><div class="c-l">Já usados</div></div>
+    <div class="c rd"><div class="c-n" id="cn-x">0</div><div class="c-l">Inválidos</div></div>
   </div>
 
-  <!-- MODAL (bottom sheet) -->
   <div class="modal-wrap" id="mw">
     <div class="modal-box">
       <div class="modal-handle"></div>
@@ -429,12 +357,12 @@
 <script>
   const API = "https://script.google.com/macros/s/AKfycbwKG0kjpDcCrNYHyInY-WMxN9y9VDP6d1H0MnQct9-5iBpKS4_oNRLrQYpg7TTK6t-S/exec";
   let scanner = null, pausado = false;
-  const cnt = { v: 0, u: 0, x: 0 };
+  const cnt = {v:0, u:0, x:0};
 
   function setStatus(txt, modo) {
     document.getElementById('stxt').textContent = txt;
     const d = document.getElementById('sdot');
-    d.className = 'dot' + (modo === 'ok' ? ' ok' : modo === 'loading' ? ' spin-anim' : '');
+    d.className = 'dot' + (modo==='ok' ? ' ok' : modo==='loading' ? ' spin-anim' : '');
   }
 
   function setLoading(on) {
@@ -443,27 +371,23 @@
     btn.classList.toggle('loading', on);
     btn.disabled = on;
     inp.disabled = on;
-    document.getElementById('cam-overlay').classList.toggle('on', on);
   }
 
-  // Normaliza CPF: remove apóstrofos em todas as variantes Unicode,
-  // pontuação de formatação e espaços.
-  // padStart(11,'0') corrige zeros à esquerda perdidos caso o valor
-  // tenha passado por conversão numérica em algum ponto.
   function normalizar(v) {
     let s = String(v).trim()
-      .replace(/^[\u0027\u2018\u2019\u02BC]+/, '') // apóstrofos
-      .replace(/[.\-\/\s]/g, '')                     // pontuação CPF
+      .replace(/^[\u0027\u2018\u2019\u02BC]+/, '')
+      .replace(/[.\-\/\s]/g, '')
       .trim();
     if (/^\d+$/.test(s) && s.length < 11) s = s.padStart(11, '0');
     return s;
   }
 
+  // ── CÂMERA — configuração 100% original ──
   function iniciar() {
     scanner = new Html5Qrcode("reader");
     scanner.start(
       { facingMode: "environment" },
-      { fps: 12, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
+      { fps: 10, qrbox: { width: 200, height: 200 } },
       (txt) => {
         if (pausado) return;
         pausado = true;
@@ -471,9 +395,8 @@
         chamarAPI(normalizar(txt));
       },
       () => {}
-    )
-    .then(() => setStatus('Câmera ativa — aguardando leitura', 'ok'))
-    .catch(() => setStatus('Câmera indisponível — use o campo abaixo', 'err'));
+    ).then(() => setStatus('Câmera ativa — aguardando leitura', 'ok'))
+     .catch(() => setStatus('Câmera indisponível — use o campo abaixo', 'err'));
   }
 
   async function chamarAPI(codigo) {
@@ -482,10 +405,10 @@
     try {
       const r = await fetch(API + '?codigo=' + encodeURIComponent(codigo));
       const t = await r.text();
-      if      (t.includes('✅'))  abrir('v', 'Brinde liberado!',      'Cadastro confirmado. Pode entregar o brinde.', codigo);
-      else if (t.includes('⚠️')) abrir('u', 'Já foi utilizado',      'Este CPF já teve o brinde retirado.',          codigo);
-      else                        abrir('x', 'Código inválido',       'CPF não encontrado na lista de participantes.', codigo);
-    } catch (e) {
+      if      (t.includes('✅'))  abrir('v', 'Brinde liberado!',  'Cadastro confirmado. Pode entregar o brinde.', codigo);
+      else if (t.includes('⚠️')) abrir('u', 'Já foi utilizado',  'Este CPF já teve o brinde retirado.',          codigo);
+      else                        abrir('x', 'Código inválido',   'CPF não encontrado na lista de participantes.', codigo);
+    } catch(e) {
       abrir('x', 'Erro de conexão', 'Verifique sua internet e tente novamente.', codigo);
     } finally {
       setLoading(false);
@@ -494,25 +417,21 @@
   }
 
   function abrir(t, titulo, msg, codigo) {
-    const ic  = { v: '✓', u: '!', x: '✕' };
-    const lbl = { v: 'Próxima leitura', u: 'Próxima leitura', x: 'Fechar' };
-
-    // Formata CPF se for 11 dígitos
+    const ic  = {v:'✓', u:'!', x:'✕'};
+    const lbl = {v:'Próxima leitura', u:'Próxima leitura', x:'Fechar'};
     const cpfFormatado = /^\d{11}$/.test(codigo)
       ? codigo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
       : codigo;
-
-    document.getElementById('mi').className   = 'm-i mi-' + t;
+    document.getElementById('mi').className   = 'm-i mi-'+t;
     document.getElementById('mi').textContent  = ic[t];
     document.getElementById('mt').textContent  = titulo;
     document.getElementById('md').textContent  = msg;
     document.getElementById('mc').textContent  = cpfFormatado;
-    document.getElementById('mb').className    = 'm-b mb-' + t;
+    document.getElementById('mb').className    = 'm-b mb-'+t;
     document.getElementById('mb').textContent  = lbl[t];
     document.getElementById('mw').className    = 'modal-wrap on';
-
     cnt[t]++;
-    document.getElementById('cn-' + t).textContent = cnt[t];
+    document.getElementById('cn-'+t).textContent = cnt[t];
     document.getElementById('total-count').textContent = cnt.v + cnt.u + cnt.x;
   }
 
@@ -531,18 +450,13 @@
     chamarAPI(normalizar(v));
   }
 
-  // Detecta CPF e formata no input apenas quando os 11 dígitos forem digitados
-  document.getElementById('inp').addEventListener('input', function () {
-    // Extrai só os dígitos do que o usuário digitou (sem aplicar padStart ainda)
+  document.getElementById('inp').addEventListener('input', function() {
     const apenasDigitos = this.value.replace(/\D/g, '');
     const badge = document.getElementById('cpf-badge');
-
     if (apenasDigitos.length === 11) {
-      // Todos os 11 dígitos presentes: aplica a máscara
       this.value = apenasDigitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
       badge.style.opacity = '1';
     } else {
-      // Ainda digitando: não interfere, só limpa o badge
       badge.style.opacity = '0';
     }
   });
