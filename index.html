@@ -97,17 +97,31 @@
     /* ── CAMERA ── */
     .cam {
       position: relative; width: 100%;
-      aspect-ratio: 1; max-height: 260px;
+      height: 260px;
       background: #000; overflow: hidden; flex-shrink: 0;
     }
-    #reader { width: 100%; height: 100%; }
-    #reader video { width: 100% !important; height: 100% !important; object-fit: cover; }
+    /* O html5-qrcode injeta divs e vídeo com estilos inline — sobrescrevemos tudo */
+    #reader { width: 100% !important; height: 100% !important; }
+    #reader > div { border: none !important; box-shadow: none !important; }
+    #reader video {
+      position: absolute !important;
+      top: 50% !important; left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      width: 100% !important; height: 100% !important;
+      object-fit: cover !important;
+      min-width: 100% !important; min-height: 100% !important;
+    }
     #reader img   { display: none !important; }
+    /* Esconde TODOS os elementos decorativos injetados pelo html5-qrcode */
+    #reader div[style*="border"],
+    #reader div[style*="box-shadow"],
+    #reader svg,
+    #reader canvas { display: none !important; }
 
     /* Corner frame */
     .frame {
       position: absolute; inset: 0;
-      pointer-events: none; z-index: 2;
+      pointer-events: none; z-index: 10;
       display: flex; align-items: center; justify-content: center;
     }
     .box { width: 190px; height: 190px; position: relative; }
@@ -130,7 +144,7 @@
       background: linear-gradient(90deg, transparent, var(--accent), transparent);
       border-radius: 2px;
       animation: scan 2.4s ease-in-out infinite;
-      z-index: 3;
+      z-index: 11;
     }
     @keyframes scan {
       0%,100% { margin-top: -74px; opacity: 0.2; }
@@ -141,13 +155,13 @@
       transform: translateX(-50%);
       font-size: 10px; font-family: 'Space Mono', monospace;
       color: rgba(255,255,255,0.35);
-      white-space: nowrap; z-index: 2;
+      white-space: nowrap; z-index: 10;
       letter-spacing: 0.06em;
     }
 
     /* Overlay escuro sobre a câmera quando pausado */
     .cam-overlay {
-      position: absolute; inset: 0; z-index: 4;
+      position: absolute; inset: 0; z-index: 12;
       background: rgba(13,13,13,0.7);
       display: none; align-items: center; justify-content: center;
     }
@@ -432,20 +446,24 @@
     document.getElementById('cam-overlay').classList.toggle('on', on);
   }
 
-  // Remove aspas simples (prefixo do Sheets para CPFs),
-  // pontos, traços, barras e espaços
+  // Normaliza CPF: remove apóstrofos em todas as variantes Unicode,
+  // pontuação de formatação e espaços.
+  // padStart(11,'0') corrige zeros à esquerda perdidos caso o valor
+  // tenha passado por conversão numérica em algum ponto.
   function normalizar(v) {
-    return String(v).trim()
-      .replace(/^'+/, '')
-      .replace(/[.\-\/\s]/g, '')
+    let s = String(v).trim()
+      .replace(/^[\u0027\u2018\u2019\u02BC]+/, '') // apóstrofos
+      .replace(/[.\-\/\s]/g, '')                     // pontuação CPF
       .trim();
+    if (/^\d+$/.test(s) && s.length < 11) s = s.padStart(11, '0');
+    return s;
   }
 
   function iniciar() {
     scanner = new Html5Qrcode("reader");
     scanner.start(
       { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 180, height: 180 } },
+      { fps: 12, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 },
       (txt) => {
         if (pausado) return;
         pausado = true;
@@ -513,14 +531,18 @@
     chamarAPI(normalizar(v));
   }
 
-  // Detecta CPF e formata no input
+  // Detecta CPF e formata no input apenas quando os 11 dígitos forem digitados
   document.getElementById('inp').addEventListener('input', function () {
-    const raw = normalizar(this.value);
+    // Extrai só os dígitos do que o usuário digitou (sem aplicar padStart ainda)
+    const apenasDigitos = this.value.replace(/\D/g, '');
     const badge = document.getElementById('cpf-badge');
-    if (raw.length === 11 && /^\d{11}$/.test(raw)) {
-      this.value = raw.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+
+    if (apenasDigitos.length === 11) {
+      // Todos os 11 dígitos presentes: aplica a máscara
+      this.value = apenasDigitos.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
       badge.style.opacity = '1';
     } else {
+      // Ainda digitando: não interfere, só limpa o badge
       badge.style.opacity = '0';
     }
   });
