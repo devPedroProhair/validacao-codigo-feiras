@@ -112,11 +112,11 @@
       min-width: 100% !important; min-height: 100% !important;
     }
     #reader img   { display: none !important; }
-    /* Esconde TODOS os elementos decorativos injetados pelo html5-qrcode */
+    /* Esconde apenas os elementos VISUAIS injetados pelo html5-qrcode.
+       canvas NÃO pode ser ocultado — é onde a biblioteca processa os frames. */
     #reader div[style*="border"],
     #reader div[style*="box-shadow"],
-    #reader svg,
-    #reader canvas { display: none !important; }
+    #reader svg { display: none !important; }
 
     /* Corner frame */
     .frame {
